@@ -14,9 +14,29 @@ public class BlackjackApplication {
 
 
 		BlackjackApplication app = new BlackjackApplication();
-		app.run(sc);
+//		app.run(sc);
+		app.playAgain(sc);
 		sc.close();
 
+	}
+	
+	public void playAgain(Scanner sc) {
+		boolean playing = true;
+		do {
+			run(sc);
+			System.out.println();
+			System.out.print("Do you want to play again? (Y)es or (N)o: ");
+			String input = sc.next();
+			sc.nextLine();
+			System.out.println();
+			if (input.equals("[N]+")) {
+				playing = false;
+				break;
+			}
+			else {
+				continue;
+			}
+		} while (playing == true);
 	}
 
 	public void run(Scanner sc) {
@@ -36,27 +56,34 @@ public class BlackjackApplication {
 			boolean playing = true;
 			while (playing) {
 				boolean hitting = true;
+				//CONTINUOUS LOOP FOR PLAYER TO KEEP HITTING UNTIL THEY STOP
 				while (hitting) {
 					System.out.println("(H)it or (S)tay?");
 					String choice = sc.next();
 					sc.nextLine();
+					//ADD A PLAYER CARD TO THE HAND IF PLAYER HITS
 					if (choice.toUpperCase().matches("[H]+")) {
 						player.addCard(dealer.deal());
+						//NEXT TWO LINES SET THE WHILE VALUES 
+						//BASED ON RETURN FROM checkValue() 
+						displayHands(dealer, player);
 						hitting = checkValue(player);
 						playing = checkValue(player);
-						displayHands(dealer, player);
 					}
+					//STOP ADDING CARDS TO PLAYER HAND IF PLAYER STAYS
 					else if (choice.toUpperCase().matches("[S]+")) {
 						System.out.println("Dealer's turn.");
 						System.out.println();
 						hitting = false;
 					}
+					//REMIND THE PLAYER TO CHOOSE {H, S} IF THEY ENTER SOMETHING ELSE
 					else {
 						System.out.println("Please choose to (H)it or (S)tay.");
 					}
 				}
 				dealer.setCardVisible(true);
 				displayHands(dealer, player);
+				//CONTINUOUS LOOP FOR DEALER TO KEEP HITTING UNTIL THEY BUST OR BEAT PLAYER
 				while (dealer.getHandValue() < player.getHandValue()) {
 					dealer.addCard(dealer.deal());
 					displayHands(dealer, player);
@@ -104,7 +131,7 @@ public class BlackjackApplication {
 			System.out.println("Dealer wins.");
 			return false;
 		}
-		else if (pValue == 21 && dValue < 21) {
+		else if (dValue < 21 && pValue == 21) {
 			System.out.println("Blackjack! Player wins!");
 			return false;
 		}
@@ -139,5 +166,9 @@ public class BlackjackApplication {
 			return true;
 		}
 	}
+	
+//	public void playerTurn (Dealer d, Player p) {
+//		
+//	}
 
 }
