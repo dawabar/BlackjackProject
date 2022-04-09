@@ -12,14 +12,13 @@ public class BlackjackApplication {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 
-
 		BlackjackApplication app = new BlackjackApplication();
 //		app.run(sc);
 		app.playAgain(sc);
 		sc.close();
 
 	}
-	
+
 	public void playAgain(Scanner sc) {
 		boolean playing = true;
 		do {
@@ -32,8 +31,7 @@ public class BlackjackApplication {
 			if (input.equals("[N]+")) {
 				playing = false;
 				break;
-			}
-			else {
+			} else {
 				continue;
 			}
 		} while (playing == true);
@@ -43,7 +41,7 @@ public class BlackjackApplication {
 
 		Dealer dealer = new Dealer();
 		Player player = new Player();
-		
+
 		dealer.buildDeck();
 		player.addCard(dealer.deal());
 		dealer.addCard(dealer.deal());
@@ -52,121 +50,126 @@ public class BlackjackApplication {
 		dealer.addCard(dealer.deal());
 		displayHands(dealer, player);
 		if (checkBlackJack(dealer, player) == true) {
-			
+
 			boolean playing = true;
 			while (playing) {
+				if (playing == false) {
+					break;
+				}
 				playing = playerTurn(dealer, player, sc);
 				if (playing == true) {
 					dealer.setCardVisible(true);
 					displayHands(dealer, player);
-					dealerTurn(dealer, player, sc, playing);
+					playing = dealerTurn(dealer, player, sc);
 				}
 			}
 		}
-	} 
+	}
 
-	public void displayHands (Dealer d, Player p) {
+	public void displayHands(Dealer d, Player p) {
 
 		System.out.println("DEALER\t\t\tPLAYER");
 		for (Card card : d.getHand()) {
 			if (card.isVisible() == false) {
 				System.out.print("\u25AE\u25AE ");
-			}
-			else if (card.getSuit().getColor() == Color.RED) {
-			System.out.print(card.getRank().getLabel() + card.getSuit() + " ");
-			}
-			else {
+			} else if (card.getSuit().getColor() == Color.RED) {
+				System.out.print(card.getRank().getLabel() + card.getSuit() + " ");
+			} else {
 				System.out.print(card.getRank().getLabel() + card.getSuit() + " ");
 			}
 		}
 		System.out.print("\t\t\t");
 		for (Card card : p.getHand()) {
 			if (card.getSuit().getColor() == Color.RED) {
-			System.out.print(card.getRank().getLabel() + card.getSuit() + " ");
-			}
-			else {
+				System.out.print(card.getRank().getLabel() + card.getSuit() + " ");
+			} else {
 				System.out.print(card.getRank().getLabel() + card.getSuit() + " ");
 			}
 		}
 		System.out.println();
-		
+
 	}
-	
-	public boolean checkBlackJack (Dealer d, Player p) {
+
+	public boolean checkBlackJack(Dealer d, Player p) {
 		int dValue = d.getHandValue();
 		int pValue = p.getHandValue();
 		if (dValue == 21 && pValue == 21) {
+			d.setCardVisible(true);
+			displayHands(d, p);
 			System.out.println("Game ends in a draw.");
 			return false;
-		}
-		else if (dValue == 21 && pValue < 21) {
+		} else if (dValue == 21 && pValue < 21) {
+			d.setCardVisible(true);
+			displayHands(d, p);
 			System.out.println("Dealer wins.");
 			return false;
-		}
-		else if (dValue < 21 && pValue == 21) {
+		} else if (dValue < 21 && pValue == 21) {
+			d.setCardVisible(true);
+			displayHands(d, p);
 			System.out.println("Blackjack! Player wins!");
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
 	}
-	
-	public boolean checkValue (Player p) {
+
+	public boolean checkValue(Player p, Dealer d) {
 		int pValue = p.getHandValue();
 		if (pValue > 21) {
+			d.setCardVisible(true);
+			displayHands(d, p);
 			System.out.println("Bust! Dealer wins.");
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
 	}
-	
-	public boolean checkValue (Dealer d, Player p) {
+
+	public boolean checkValue(Dealer d, Player p) {
 		int dValue = d.getHandValue();
 		int pValue = p.getHandValue();
 		if (dValue > 21) {
 			System.out.println("Bust! Player wins!");
 			return false;
-		}
-		else if (dValue > pValue) {
+		} else if (dValue > pValue) {
 			System.out.println("Dealer wins.");
 			return false;
-		}
-		else {
+		} else if (dValue == pValue) {
+			System.out.println("Game ends in a draw.");
+			return false;
+		} else {
 			return true;
 		}
 	}
-	
-	public boolean playerTurn (Dealer dealer, Player player, Scanner sc) {
+
+	public boolean playerTurn(Dealer dealer, Player player, Scanner sc) {
 		boolean hitting = true;
 		boolean continuing = true;
-		//CONTINUOUS LOOP FOR PLAYER TO KEEP HITTING UNTIL THEY STOP
+		// CONTINUOUS LOOP FOR PLAYER TO KEEP HITTING UNTIL THEY STOP
 		while (hitting) {
 			System.out.println("(H)it or (S)tay?");
 			String choice = sc.next();
 			sc.nextLine();
-			//ADD A PLAYER CARD TO THE HAND IF PLAYER HITS
+			// ADD A PLAYER CARD TO THE HAND IF PLAYER HITS
 			if (choice.toUpperCase().matches("[H]+")) {
 				player.addCard(dealer.deal());
-				//NEXT TWO LINES SET THE WHILE VALUES 
-				//BASED ON RETURN FROM checkValue() 
+				// NEXT TWO LINES SET THE WHILE VALUES
+				// BASED ON RETURN FROM checkValue()
 				displayHands(dealer, player);
-				hitting = checkValue(player);
-				continuing = checkValue(player);
+				hitting = checkValue(player, dealer);
+				continuing = checkValue(player, dealer);
 				if (hitting == false && continuing == false) {
 					break;
 				}
 			}
-			//STOP ADDING CARDS TO PLAYER HAND IF PLAYER STAYS
+			// STOP ADDING CARDS TO PLAYER HAND IF PLAYER STAYS
 			else if (choice.toUpperCase().matches("[S]+")) {
 				System.out.println("Dealer's turn.");
 				System.out.println();
 				hitting = false;
 				break;
 			}
-			//REMIND THE PLAYER TO CHOOSE {H, S} IF THEY ENTER SOMETHING ELSE
+			// REMIND THE PLAYER TO CHOOSE {H, S} IF THEY ENTER SOMETHING ELSE
 			else {
 				System.out.println("Please choose to (H)it or (S)tay.");
 			}
@@ -174,10 +177,19 @@ public class BlackjackApplication {
 		return continuing;
 
 	}
-	
-	public boolean dealerTurn (Dealer dealer, Player player, Scanner sc, boolean playing) {
+
+	public boolean dealerTurn(Dealer dealer, Player player, Scanner sc) {
 		boolean continuing = true;
-		//CONTINUOUS LOOP FOR DEALER TO KEEP HITTING UNTIL THEY BUST OR BEAT PLAYER
+		if (dealer.getHandValue() == player.getHandValue()) {
+			System.out.println("Game ends in a draw.");
+			continuing = false;
+			return continuing;
+		} else if (dealer.getHandValue() > player.getHandValue()) {
+			System.out.println("Dealer wins.");
+			continuing = false;
+			return continuing;
+		}
+		// CONTINUOUS LOOP FOR DEALER TO KEEP HITTING UNTIL THEY BUST OR BEAT PLAYER
 		while (dealer.getHandValue() < player.getHandValue()) {
 			dealer.addCard(dealer.deal());
 			displayHands(dealer, player);
