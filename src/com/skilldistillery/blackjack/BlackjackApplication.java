@@ -55,39 +55,11 @@ public class BlackjackApplication {
 			
 			boolean playing = true;
 			while (playing) {
-				boolean hitting = true;
-				//CONTINUOUS LOOP FOR PLAYER TO KEEP HITTING UNTIL THEY STOP
-				while (hitting) {
-					System.out.println("(H)it or (S)tay?");
-					String choice = sc.next();
-					sc.nextLine();
-					//ADD A PLAYER CARD TO THE HAND IF PLAYER HITS
-					if (choice.toUpperCase().matches("[H]+")) {
-						player.addCard(dealer.deal());
-						//NEXT TWO LINES SET THE WHILE VALUES 
-						//BASED ON RETURN FROM checkValue() 
-						displayHands(dealer, player);
-						hitting = checkValue(player);
-						playing = checkValue(player);
-					}
-					//STOP ADDING CARDS TO PLAYER HAND IF PLAYER STAYS
-					else if (choice.toUpperCase().matches("[S]+")) {
-						System.out.println("Dealer's turn.");
-						System.out.println();
-						hitting = false;
-					}
-					//REMIND THE PLAYER TO CHOOSE {H, S} IF THEY ENTER SOMETHING ELSE
-					else {
-						System.out.println("Please choose to (H)it or (S)tay.");
-					}
-				}
-				dealer.setCardVisible(true);
-				displayHands(dealer, player);
-				//CONTINUOUS LOOP FOR DEALER TO KEEP HITTING UNTIL THEY BUST OR BEAT PLAYER
-				while (dealer.getHandValue() < player.getHandValue()) {
-					dealer.addCard(dealer.deal());
+				playing = playerTurn(dealer, player, sc);
+				if (playing == true) {
+					dealer.setCardVisible(true);
 					displayHands(dealer, player);
-					playing = checkValue(dealer, player);
+					dealerTurn(dealer, player, sc, playing);
 				}
 			}
 		}
@@ -167,8 +139,51 @@ public class BlackjackApplication {
 		}
 	}
 	
-//	public void playerTurn (Dealer d, Player p) {
-//		
-//	}
+	public boolean playerTurn (Dealer dealer, Player player, Scanner sc) {
+		boolean hitting = true;
+		boolean continuing = true;
+		//CONTINUOUS LOOP FOR PLAYER TO KEEP HITTING UNTIL THEY STOP
+		while (hitting) {
+			System.out.println("(H)it or (S)tay?");
+			String choice = sc.next();
+			sc.nextLine();
+			//ADD A PLAYER CARD TO THE HAND IF PLAYER HITS
+			if (choice.toUpperCase().matches("[H]+")) {
+				player.addCard(dealer.deal());
+				//NEXT TWO LINES SET THE WHILE VALUES 
+				//BASED ON RETURN FROM checkValue() 
+				displayHands(dealer, player);
+				hitting = checkValue(player);
+				continuing = checkValue(player);
+				if (hitting == false && continuing == false) {
+					break;
+				}
+			}
+			//STOP ADDING CARDS TO PLAYER HAND IF PLAYER STAYS
+			else if (choice.toUpperCase().matches("[S]+")) {
+				System.out.println("Dealer's turn.");
+				System.out.println();
+				hitting = false;
+				break;
+			}
+			//REMIND THE PLAYER TO CHOOSE {H, S} IF THEY ENTER SOMETHING ELSE
+			else {
+				System.out.println("Please choose to (H)it or (S)tay.");
+			}
+		}
+		return continuing;
+
+	}
+	
+	public boolean dealerTurn (Dealer dealer, Player player, Scanner sc, boolean playing) {
+		boolean continuing = true;
+		//CONTINUOUS LOOP FOR DEALER TO KEEP HITTING UNTIL THEY BUST OR BEAT PLAYER
+		while (dealer.getHandValue() < player.getHandValue()) {
+			dealer.addCard(dealer.deal());
+			displayHands(dealer, player);
+			continuing = checkValue(dealer, player);
+		}
+		return continuing;
+	}
 
 }
