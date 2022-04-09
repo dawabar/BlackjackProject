@@ -6,26 +6,36 @@ public class Card {
 
 	private Suit suit;
 	private Rank rank;
+	private boolean visible;
 
 	public Card(Suit suit, Rank rank) {
 		this.suit = suit;
 		this.rank = rank;
+		this.visible = true;
 	}
 
 	public Suit getSuit() {
 		return suit;
 	}
 
-	public void setSuit(Suit suit) {
-		this.suit = suit;
-	}
+//	public void setSuit(Suit suit) {
+//		this.suit = suit;
+//	}
 
 	public Rank getRank() {
 		return rank;
 	}
 
-	public void setRank(Rank rank) {
-		this.rank = rank;
+//	public void setRank(Rank rank) {
+//		this.rank = rank;
+//	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean b) {
+		this.visible = b;
 	}
 
 	public int getValue() {
@@ -51,7 +61,7 @@ public class Card {
 
 	@Override
 	public String toString() {
-		return this.getRank() + " of " + this.getSuit();
+			return this.rank.getLabel() + this.getSuit();		
 	}
 
 }
