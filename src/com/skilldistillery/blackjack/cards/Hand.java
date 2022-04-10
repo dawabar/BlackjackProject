@@ -28,8 +28,5 @@ public class Hand {
 		hand.get(0).setVisible(b);
 //		card.isVisible(b);
 	}
-	
-//	public void setHardToSoft () {
-//		hard = false;
-//	}
+		
 }

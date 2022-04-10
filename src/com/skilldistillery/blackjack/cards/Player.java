@@ -5,5 +5,5 @@ public class Player extends Participant {
 	public Player() {
 		super();
 	}
-
+		
 }
